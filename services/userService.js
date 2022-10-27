@@ -5,11 +5,13 @@ const User = require("../models/User");
 const JWT_SECRET = "a45oncuv9pje";
 
 //TODO: check what fields are used for identification by assignment
-async function login(username, password) {
-  const user = await User.findOne({ username }).collation({
-    locale: "en",
-    strength: 2,
-  });
+async function login(email, password) {
+  const user = await User
+  .findOne({ email })
+  // .collation({
+  //   locale: "en",
+  //   strength: 2,
+  // });
 
   if (!user) throw new Error("Invalid username or password.");
 

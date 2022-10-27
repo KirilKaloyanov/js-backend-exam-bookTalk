@@ -9,4 +9,10 @@ homeController.get("/", (req, res) => {
   });
 });
 
+homeController.get("/error", (req, res) => {
+  res.render("error", {
+    title: "Not Found",
+  });
+});
+
 module.exports = homeController;

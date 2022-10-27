@@ -2,8 +2,9 @@ const authController = require("express").Router();
 
 const { register, login } = require("../services/userService");
 const { parseError } = require("../util/parser");
+const { isGuest, hasUser } = require('../middlewares/guards');
 
-authController.get("/register", (req, res) => {
+authController.get("/register", isGuest(), (req, res) => {
   //TODO: replace with actual view by assignment
   res.render("register", {
     title: "Register page",
@@ -39,7 +40,7 @@ authController.post("/register", async (req, res) => {
   }
 });
 
-authController.get("/login", (req, res) => {
+authController.get("/login", isGuest(), (req, res) => {
   //TODO: replace with actual view by assignment
   res.render("login", {
     title: "Login Page",
@@ -48,7 +49,7 @@ authController.get("/login", (req, res) => {
 
 authController.post("/login", async (req, res) => {
   try {
-    const token = await login(req.body.username, req.body.password);
+    const token = await login(req.body.email, req.body.password);
 
     res.cookie("token", token);
     res.redirect("/"); //TODO: replace with redirect by assignment
@@ -61,13 +62,13 @@ authController.post("/login", async (req, res) => {
       title: "Login Page",
       errors,
       body: {
-        username: req.body.username,
+        email: req.body.email,
       },
     });
   }
 });
 
-authController.get("/logout", (req, res) => {
+authController.get("/logout", hasUser(), (req, res) => {
   res.clearCookie("token");
   res.redirect("/");
 });
