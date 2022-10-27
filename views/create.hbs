@@ -1,10 +1,12 @@
-    <!-- In case of error, you should display div with class "errorContainer" -->
-    <!-- You can choose to display the first error or all of them (error message/s in your opinion) -->
-    <!-- <div>
+    {{#if errors}}
+    <div>
         <div class="errorContainer">
-            <p>Error</p>
+            {{#each errors}}
+            <p>{{this}}</p>
+            {{/each}}
         </div>
-    </div> -->
+    </div> 
+    {{/if}}
 
     <section class="create-form-container">
 
