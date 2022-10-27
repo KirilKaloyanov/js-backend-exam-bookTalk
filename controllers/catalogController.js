@@ -51,14 +51,6 @@ catalogController.get('/book/:id', async (req, res) => {
     const book = await getBook(bookId);
     
     const user = await midUser(bookId, req.user );
-
-    // if (book.owner.toString() === user._id) {
-    //     user.isOwner = true;
-    // } else {
-    //     user.isVisitor = true;
-    //     if (book.wishList.map(w => w.toString()).indexOf(user._id) >= 0) 
-    //     user.wished = true;
-    // }
     
     res.render('bookDetails', {
         title: 'Details', 
@@ -74,7 +66,7 @@ catalogController.get('/wish/:id', hasUser(), async (req, res) => {
     const userId = req.user._id;      
 
     const user =  await midUser(bookId, req.user );
-    if (!user.wish) return res.redirect('/error');
+    if (user.wish) return res.redirect('/error');
 
     await wishBook(bookId, userId) ;
     res.redirect(`/catalog/book/${bookId}`);
