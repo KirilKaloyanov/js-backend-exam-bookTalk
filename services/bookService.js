@@ -21,7 +21,7 @@ async function wishBook(bookId, userId) {
     const book = await Book.findById(bookId);
     book.wishList.push(userId);
 
-    await book.save();
+    await book.save(); 
 }
 
 async function updateBook(bookId, updatedBook) {

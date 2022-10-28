@@ -95,9 +95,26 @@ catalogController.get('/edit/:id', [hasUser, midUser], async (req, res) => {
 });
 
 catalogController.post('/edit/:id', async (req, res) => {
-    const bookId = req.params.id;
-    await updateBook(bookId, req.body);
-    res.redirect(`/catalog/book/${bookId}`);
+    try {
+        const bookId = req.params.id;
+        await updateBook(bookId, req.body);
+        res.redirect(`/catalog/book/${bookId}`);
+    } catch (err) {
+        const errors = parseError(err);
+        res.render('create', {
+            title: 'Create Book',
+            body: {
+                title: req.body.title,
+                author: req.body.author,
+                genre: req.body.genre,
+                stars: req.body.stars,
+                imageUrl: req.body.imageUrl,
+                review: req.body.review,
+            },
+            errors
+        });
+    }
+
 });
 
 //DELETE BOOK
@@ -110,7 +127,7 @@ catalogController.get('/delete/:id', [hasUser, midUser], async (req, res) => {
 
     await deleteBook(bookId, req.body);
     res.redirect(`/catalog`);
-});
+}); 
 
 
 

@@ -1,6 +1,7 @@
 const { Schema, model, Types } = require('mongoose');
 
 const URL_PATTERN= /^https?:\/\/.+$/i;
+const PATTERN = /^\/.+$/;
 
 const bookShema = new Schema({
     title: {
@@ -17,7 +18,7 @@ const bookShema = new Schema({
     },
     stars: { type: Number, required: true, min: [1, 'Stars must be between 1 and 5'], max: [5, 'Stars must be between 1 and 5'] },
     imageUrl: { type: String, required: true, validate: {
-        validator: (value) => URL_PATTERN.test(value),
+        validator: (value) => PATTERN.test(value),
         message: 'Image URL is not valid'
     } },
     review: {
@@ -30,4 +31,4 @@ const bookShema = new Schema({
 
 const Book = model('Book', bookShema);
 
-module.exports = Book;
+module.exports = Book; 
