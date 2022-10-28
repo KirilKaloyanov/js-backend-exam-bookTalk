@@ -1,5 +1,5 @@
 const catalogController = require('express').Router();
-const { hasUser } = require('../middlewares/guards');
+const { hasUser, midUser } = require('../middlewares/guards');
 const { parseError } = require('../util/parser');
 const { getAll, getBook, createBook, wishBook, updateBook, deleteBook } = require('../services/bookService');
 
@@ -11,7 +11,7 @@ catalogController.get('/', async (req, res) => {
     });
 });
 
-catalogController.get('/create', hasUser(), (req, res) => {
+catalogController.get('/create', hasUser, (req, res) => {
     res.render('create', {
         title: 'Create Book'
     });
@@ -53,11 +53,11 @@ catalogController.post('/create', async (req, res) => {
 
 //BOOK DETAILS
 
-catalogController.get('/book/:id', async (req, res) => {
+catalogController.get('/book/:id', midUser, async (req, res) => {
     const bookId = req.params.id;
     const book = await getBook(bookId);
+    const user = req.user;
 
-    const user = await midUser(bookId, req.user);
 
     res.render('bookDetails', {
         title: 'Details',
@@ -68,24 +68,23 @@ catalogController.get('/book/:id', async (req, res) => {
 
 // WISH BOOK
 
-catalogController.get('/wish/:id', hasUser(), async (req, res) => {
+catalogController.get('/wish/:id', [hasUser, midUser], async (req, res) => {
     const bookId = req.params.id;
-    const userId = req.user._id;
+    const user = req.user;
 
-    const user = await midUser(bookId, req.user);
     if (user.wish) return res.redirect('/error');
 
-    await wishBook(bookId, userId);
+    await wishBook(bookId, user._id);
     res.redirect(`/catalog/book/${bookId}`);
 });
 
 //EDIT BOOK
 
-catalogController.get('/edit/:id', hasUser(), async (req, res) => {
+catalogController.get('/edit/:id', [hasUser, midUser], async (req, res) => {
     const bookId = req.params.id;
     const book = await getBook(bookId);
+    const user = req.user;
 
-    const user = await midUser(bookId, req.user);
     if (!user.isOwner) return res.redirect('/error');
 
     res.render('edit', {
@@ -103,27 +102,16 @@ catalogController.post('/edit/:id', async (req, res) => {
 
 //DELETE BOOK
 
-catalogController.get('/delete/:id', hasUser(), async (req, res) => {
+catalogController.get('/delete/:id', [hasUser, midUser], async (req, res) => {
     const bookId = req.params.id;
+    const user = req.user;
 
-    const user = await midUser(bookId, req.user);
     if (!user.isOwner) return res.redirect('/error');
 
     await deleteBook(bookId, req.body);
     res.redirect(`/catalog`);
 });
 
-async function midUser(bookId, user) {
-    const book = await getBook(bookId);
 
-    if (book.owner.toString() === user._id) {
-        user.isOwner = true;
-    } else {
-        user.isVisitor = true;
-        if (book.wishList.map(w => w.toString()).indexOf(user._id) >= 0)
-            user.wished = true;
-    }
-    return user;
-}
 
 module.exports = catalogController;

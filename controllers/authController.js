@@ -4,7 +4,7 @@ const { register, login } = require("../services/userService");
 const { parseError } = require("../util/parser");
 const { isGuest, hasUser } = require('../middlewares/guards');
 
-authController.get("/register", isGuest(), (req, res) => {
+authController.get("/register", isGuest, (req, res) => {
   //TODO: replace with actual view by assignment
   res.render("register", {
     title: "Register page",
@@ -43,7 +43,7 @@ authController.post("/register", async (req, res) => {
   }
 });
 
-authController.get("/login", isGuest(), (req, res) => {
+authController.get("/login", isGuest, (req, res) => {
   //TODO: replace with actual view by assignment
   res.render("login", {
     title: "Login Page",
@@ -71,7 +71,7 @@ authController.post("/login", async (req, res) => {
   }
 });
 
-authController.get("/logout", hasUser(), (req, res) => {
+authController.get("/logout", hasUser, (req, res) => {
   res.clearCookie("token");
   res.redirect("/");
 });

@@ -18,7 +18,7 @@ homeController.get("/error", (req, res) => {
   });
 });
 
-homeController.get('/profile', hasUser(), async (req,res) => {
+homeController.get('/profile', hasUser, async (req,res) => {
   const user = req.user;
   const userBooks = await getAllByUser(user);
   res.render('profile', {
